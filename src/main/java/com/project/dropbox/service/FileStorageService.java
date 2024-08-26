@@ -1,5 +1,7 @@
-package com.project.dropbox;
+package com.project.dropbox.service;
 
+import com.project.dropbox.entity.FileMetadata;
+import com.project.dropbox.repository.FileMetadataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

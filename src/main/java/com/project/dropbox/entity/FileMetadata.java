@@ -1,4 +1,4 @@
-package com.project.dropbox;
+package com.project.dropbox.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

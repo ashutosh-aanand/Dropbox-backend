@@ -1,5 +1,7 @@
-package com.project.dropbox;
+package com.project.dropbox.controller;
 
+import com.project.dropbox.entity.FileMetadata;
+import com.project.dropbox.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
