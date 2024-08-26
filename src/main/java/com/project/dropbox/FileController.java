@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
@@ -41,6 +43,20 @@ public class FileController {
             headers.setContentType(MediaType.parseMediaType(fileType));
 
             return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PutMapping("/{fileId}")
+    public ResponseEntity<FileMetadata> updateFile(
+            @PathVariable String fileId,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "newFileName", required = false) String newFileName) {
+
+        try {
+            FileMetadata updatedMetadata = fileStorageService.updateFile(fileId, file, newFileName);
+            return ResponseEntity.ok(updatedMetadata);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
