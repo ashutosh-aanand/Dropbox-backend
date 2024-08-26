@@ -1,6 +1,7 @@
 package com.project.dropbox;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,13 +18,13 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<FileMetadata> upload(@RequestParam("file") MultipartFile file) {
         try {
-            return fileStorageService.storeFile(file);
+            FileMetadata savedFileMetadata = fileStorageService.storeFile(file);
+            return ResponseEntity.ok(savedFileMetadata);
         }
         catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

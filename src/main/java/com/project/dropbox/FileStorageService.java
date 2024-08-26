@@ -17,10 +17,12 @@ public class FileStorageService {
 
     private final FileMetadataRepository fileMetadataRepository;
 
+    private static final String UPLOAD_DIR = "./uploads";
 
-    public String storeFile(MultipartFile file) throws IOException {
+
+    public FileMetadata storeFile(MultipartFile file) throws IOException {
         String fileName = file.getOriginalFilename();
-        Path filePath = Paths.get("./uploads", fileName);
+        Path filePath = Paths.get(UPLOAD_DIR, fileName);
 
         Files.copy(file.getInputStream(), filePath);
 
@@ -31,8 +33,6 @@ public class FileStorageService {
         fileMetadata.setPath(filePath.toString());
         fileMetadata.setCreatedAt(Timestamp.from(Instant.now()));
 
-        fileMetadataRepository.save(fileMetadata);
-
-        return "File uploaded Successfully!";
+        return fileMetadataRepository.save(fileMetadata);
     }
 }
