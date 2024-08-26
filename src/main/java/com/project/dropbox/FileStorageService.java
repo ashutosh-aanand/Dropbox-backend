@@ -49,4 +49,28 @@ public class FileStorageService {
         Path filePath = Paths.get(metadataOptional.get().getPath());
         return Files.readAllBytes(filePath);
     }
+
+    public FileMetadata updateFile(String fileId, MultipartFile file, String newFileName) throws IOException {
+        Optional<FileMetadata> metadataOptional = fileMetadataRepository.findById(fileId);
+        if (metadataOptional.isEmpty()) {
+            throw new ResponseStatusException(NOT_FOUND, "File not found");
+        }
+
+        FileMetadata metadata = metadataOptional.get();
+        Path oldFilePath = Paths.get(metadata.getPath());
+
+        if (file != null && !file.isEmpty()) {
+            Files.deleteIfExists(oldFilePath);
+
+            String updatedFileName = newFileName != null ? newFileName : file.getOriginalFilename();
+            Path newFilePath = Paths.get(UPLOAD_DIR, updatedFileName);
+            Files.copy(file.getInputStream(), newFilePath);
+
+            metadata.setName(updatedFileName);
+            metadata.setType(file.getContentType());
+            metadata.setSize(file.getSize());
+            metadata.setPath(newFilePath.toString());
+        }
+        return fileMetadataRepository.save(metadata);
+    }
 }
