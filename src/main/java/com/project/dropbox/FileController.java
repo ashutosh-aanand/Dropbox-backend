@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/files")
@@ -21,6 +21,12 @@ public class FileController {
     @GetMapping("/hello")
     public String hello() {
         return "Hello World";
+    }
+
+    @GetMapping
+    public ResponseEntity<List<FileMetadata>> listAllFiles() {
+        List<FileMetadata> files = fileStorageService.listAllFiles();
+        return ResponseEntity.ok(files);
     }
 
     @PostMapping("/upload")

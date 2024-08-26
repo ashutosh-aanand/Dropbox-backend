@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -86,5 +87,9 @@ public class FileStorageService {
         Files.deleteIfExists(filePath);
 
         fileMetadataRepository.delete(metadata);
+    }
+
+    public List<FileMetadata> listAllFiles() {
+        return fileMetadataRepository.findAll();
     }
 }
