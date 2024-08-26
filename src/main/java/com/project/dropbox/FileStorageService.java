@@ -73,4 +73,18 @@ public class FileStorageService {
         }
         return fileMetadataRepository.save(metadata);
     }
+
+    public void deleteFile(String fileId) throws IOException {
+        Optional<FileMetadata> metadataOptional = fileMetadataRepository.findById(fileId);
+        if (metadataOptional.isEmpty()) {
+            throw new ResponseStatusException(NOT_FOUND, "File not found");
+        }
+
+        FileMetadata metadata = metadataOptional.get();
+        Path filePath = Paths.get(metadata.getPath());
+
+        Files.deleteIfExists(filePath);
+
+        fileMetadataRepository.delete(metadata);
+    }
 }

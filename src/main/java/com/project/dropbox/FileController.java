@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
@@ -57,6 +58,18 @@ public class FileController {
         try {
             FileMetadata updatedMetadata = fileStorageService.updateFile(fileId, file, newFileName);
             return ResponseEntity.ok(updatedMetadata);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity<Void> deleteFile(@PathVariable String fileId) {
+        try {
+            fileStorageService.deleteFile(fileId);
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e){
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
