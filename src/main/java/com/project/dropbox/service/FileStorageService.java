@@ -19,12 +19,19 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
-@RequiredArgsConstructor
 public class FileStorageService {
 
+    private static final int CACHE_CAPACITY = 3;
+
     private final FileMetadataRepository fileMetadataRepository;
+    private final LruCache lruCache;
 
     private static final String UPLOAD_DIR = "./uploads";
+
+    public FileStorageService(FileMetadataRepository fileMetadataRepository) {
+        this.fileMetadataRepository = fileMetadataRepository;
+        this.lruCache = new LruCache(CACHE_CAPACITY);
+    }
 
 
     public FileMetadata storeFile(MultipartFile file) throws IOException {
@@ -44,12 +51,23 @@ public class FileStorageService {
     }
 
     public byte[] readFile(String fileId) throws IOException {
-        Optional<FileMetadata> metadataOptional = fileMetadataRepository.findById(fileId);
-        if (metadataOptional.isEmpty()) {
+        String path = null;
+        FileMetadata cachedFileMetaData = lruCache.get(fileId);
+        if (cachedFileMetaData != null) {
+            path = cachedFileMetaData.getPath();
+        } else {
+            Optional<FileMetadata> metadataOptional = fileMetadataRepository.findById(fileId);
+            if (metadataOptional.isPresent()) {
+                lruCache.update(fileId, metadataOptional.get());
+                path = metadataOptional.get().getPath();
+            } else {
+                throw new ResponseStatusException(NOT_FOUND, "File not found");
+            }
+        }
+        if(path == null) {
             throw new ResponseStatusException(NOT_FOUND, "File not found");
         }
-
-        Path filePath = Paths.get(metadataOptional.get().getPath());
+        Path filePath = Paths.get(path);
         return Files.readAllBytes(filePath);
     }
 
