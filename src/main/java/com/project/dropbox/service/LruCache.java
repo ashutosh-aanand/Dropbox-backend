@@ -53,6 +53,7 @@ public class LruCache {
     public void update(String fileId, FileMetadata fileMetadata){
         if(head == null) {
             head = new CacheNode(fileId, fileMetadata);
+            fileLookup.put(fileId, head);
             tail = head;
             return;
         }
@@ -60,6 +61,7 @@ public class LruCache {
         if(nodeRef == null){
             // new node to be added
             nodeRef = new CacheNode(fileId, fileMetadata);
+            fileLookup.put(fileId, nodeRef);
             if(currentSize == capacity){
                 deleteLastNode();
             } else currentSize++;
